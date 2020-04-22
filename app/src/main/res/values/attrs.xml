@@ -2,12 +2,19 @@
 <resources>
     <!--自定义 矩形IndicatorView-->
     <declare-styleable name="RectIndicatorView">
+        <!--文字未选中颜色-->
         <attr name="rectTextColorNormal" format="color"/>
+        <!--文字选中后颜色-->
         <attr name="rectTextColorSelected" format="color"/>
+        <!--文字大小-->
         <attr name="rectTextSize" format="dimension"/>
+        <!--边框颜色-->
         <attr name="rectNormalColor" format="color"/>
+        <!--被选中文字边框颜色-->
         <attr name="rectSelectedColor" format="color"/>
+        <!--边框粗细-->
         <attr name="rectStrokeWidth" format="dimension"/>
+        <!--是否显示viewPager切换动画-->
         <attr name="showViewPagerAnimation" format="boolean"/>
     </declare-styleable>
 </resources>
