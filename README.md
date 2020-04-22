@@ -1,6 +1,7 @@
 # RectIndicatorView
-[ ![Download](https://api.bintray.com/packages/lym6437/AndroidRepository/RectIndicatorView/images/download.svg) ](https://bintray.com/lym6437/AndroidRepository/RectIndicatorView/_latestVersion)
+
 Android方形边框文字选择器
+[ ![Download](https://api.bintray.com/packages/lym6437/AndroidRepository/RectIndicatorView/images/download.svg) ](https://bintray.com/lym6437/AndroidRepository/RectIndicatorView/_latestVersion)
 
 ## 属性及使用说明
 
