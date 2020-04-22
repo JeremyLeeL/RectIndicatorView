@@ -105,8 +105,6 @@ class RectIndicatorView @JvmOverloads constructor(
     /**选中框滑动的方向（未开启viewPager切换动画时使用）*/
     private var direction = Direction.RIGHT
 
-    private var isFirstLoad = true
-
     /**数据源*/
     var data: List<String>? = null
         set(data) {
@@ -172,7 +170,6 @@ class RectIndicatorView @JvmOverloads constructor(
                 }
             }
             canvas.drawRect(left, 0f, left + onePieceWidth, height.toFloat(), paint)
-            isFirstLoad = false
         }
     }
 
