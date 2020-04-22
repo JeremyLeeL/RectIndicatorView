@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--自定义 矩形IndicatorView-->
+    <declare-styleable name="RectIndicatorView">
+        <attr name="rectTextColorNormal" format="color"/>
+        <attr name="rectTextColorSelected" format="color"/>
+        <attr name="rectTextSize" format="dimension"/>
+        <attr name="rectNormalColor" format="color"/>
+        <attr name="rectSelectedColor" format="color"/>
+        <attr name="rectStrokeWidth" format="dimension"/>
+        <attr name="showViewPagerAnimation" format="boolean"/>
+    </declare-styleable>
+</resources>
