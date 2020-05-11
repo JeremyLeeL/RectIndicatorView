@@ -21,6 +21,8 @@ Android方形边框文字选择器
         <attr name="rectStrokeWidth" format="dimension"/>
         <!--是否显示viewPager切换动画-->
         <attr name="showViewPagerAnimation" format="boolean"/>
+        <!--红点尺寸-->
+        <attr name="redPointSize" format="dimension"/>
 * 示例代码
 > 
         viewPager.adapter = Adapter()
