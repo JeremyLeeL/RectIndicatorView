@@ -16,5 +16,7 @@
         <attr name="rectStrokeWidth" format="dimension"/>
         <!--是否显示viewPager切换动画-->
         <attr name="showViewPagerAnimation" format="boolean"/>
+        <!--红点-->
+        <attr name="redPointSize" format="dimension"/>
     </declare-styleable>
 </resources>

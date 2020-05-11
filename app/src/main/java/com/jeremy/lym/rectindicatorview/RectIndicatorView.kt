@@ -129,6 +129,13 @@ class RectIndicatorView @JvmOverloads constructor(
             }
         }
 
+    /**红点index集合*/
+    private val redPointIndex by lazy {
+        mutableListOf<Int>()
+    }
+
+    private var redPointSize: Float
+
     init {
         val typeArray = context.obtainStyledAttributes(attributeSet, R.styleable.RectIndicatorView, defStyleAttr, 0)
         textColorNormal = typeArray.getColor(R.styleable.RectIndicatorView_rectTextColorNormal, Color.parseColor("#6E8CB8"))
@@ -137,11 +144,13 @@ class RectIndicatorView @JvmOverloads constructor(
         rectNormalColor = typeArray.getColor(R.styleable.RectIndicatorView_rectNormalColor, Color.parseColor("#6E8CB8"))
         rectSelectedColor = typeArray.getColor(R.styleable.RectIndicatorView_rectSelectedColor, Color.parseColor("#FFCC08"))
         strokeWidth = typeArray.getDimension(R.styleable.RectIndicatorView_rectStrokeWidth, dp2Px(1f))
-        showViewPagerAnimation = typeArray.getBoolean(R.styleable.RectIndicatorView_showViewPagerAnimation, true)
+        showViewPagerAnimation = typeArray.getBoolean(R.styleable.RectIndicatorView_showViewPagerAnimation, false)
+        redPointSize = typeArray.getDimension(R.styleable.RectIndicatorView_redPointSize, dp2Px(5f))
         typeArray.recycle()
 
         paint = Paint(Paint.ANTI_ALIAS_FLAG)
         paint.style = Paint.Style.STROKE
+        paint.strokeCap = Paint.Cap.ROUND
         paint.strokeWidth = strokeWidth
 
         orientation = HORIZONTAL
@@ -171,13 +180,21 @@ class RectIndicatorView @JvmOverloads constructor(
             }
             canvas.drawRect(left, 0f, left + onePieceWidth, height.toFloat(), paint)
         }
+        if (redPointIndex.isNotEmpty()) {
+            paint.color = Color.parseColor("#FF5240")
+            paint.strokeWidth = redPointSize
+            redPointIndex.forEach {
+                canvas.drawPoint(onePieceWidth * (it + 1) - dp2Px(10f), height / 2f, paint)
+            }
+            paint.strokeWidth = strokeWidth
+        }
     }
 
+    /**设置关联ViewPager*/
     fun setUpWithViewPager(viewPager: ViewPager){
         this.viewPager = viewPager
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(p0: Int) {
-                Log.e(TAG, "onPageScrollStateChanged: $p0")
                 when(p0){
                     1 ->{
                         isScrollManual = true
@@ -185,6 +202,7 @@ class RectIndicatorView @JvmOverloads constructor(
                     0 ->{
                         isScrollManual = false
                         lastPosition = currentPosition
+                        onItemCheckedListener?.invoke(currentPosition)
                     }
                 }
             }
@@ -192,8 +210,6 @@ class RectIndicatorView @JvmOverloads constructor(
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
                 currentPosition = position
                 fraction = positionOffset
-
-                Log.e(TAG, "position: $position, positionOffset: $positionOffset")
             }
 
             override fun onPageSelected(position: Int) {
@@ -207,11 +223,40 @@ class RectIndicatorView @JvmOverloads constructor(
         })
     }
 
+    /**设置默认选中的position*/
     fun setCurrentPosition(position: Int){
         if (position != 0) {
-            viewPager?.setCurrentItem(position, showViewPagerAnimation)
-            animator.start()
+            setPosition(position)
         }
+    }
+
+    /**item选中时的回调*/
+    var onItemCheckedListener: ((position: Int) -> Unit)? = null
+
+    /**设置单一红点（radioButton效果）*/
+    fun setRedPoint(position: Int){
+        redPointIndex.clear()
+        redPointIndex.add(position)
+        invalidate()
+    }
+
+    /**移除指定红点*/
+    fun removePoint(position: Int){
+        redPointIndex.remove(position)
+        invalidate()
+    }
+
+    /**清除所有红点*/
+    fun clearPoint(){
+        redPointIndex.clear()
+        invalidate()
+    }
+
+    /**设置多个红点（CheckBox效果）*/
+    fun setRedPointIndexList(index: List<Int>){
+        redPointIndex.clear()
+        redPointIndex.addAll(index)
+        invalidate()
     }
 
     private fun setCheckText(position: Int){
@@ -227,38 +272,44 @@ class RectIndicatorView @JvmOverloads constructor(
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val x = event.x
+        if (showViewPagerAnimation){
+            val position = getTouchPosition(x)
+            viewPager?.setCurrentItem(position, showViewPagerAnimation)
+            return true
+        }
+        if (animationPlaying){
+            return super.onTouchEvent(event)
+        }
         if (event.action == MotionEvent.ACTION_DOWN){
-            if (showViewPagerAnimation){
-                val position = getTouchPosition(x)
-                viewPager?.setCurrentItem(position, showViewPagerAnimation)
-                return true
-            }
-            if (animationPlaying){
-                return super.onTouchEvent(event)
-            }
-
             val position = getTouchPosition(x)
             when{
                 position > currentPosition ->{
                     number = position - currentPosition
                     direction = Direction.RIGHT
-                    viewPager?.setCurrentItem(position, showViewPagerAnimation)
-                    animator.start()
+                    setPosition(position)
                 }
                 position < currentPosition ->{
                     number = currentPosition - position
                     direction = Direction.LEFT
-                    viewPager?.setCurrentItem(position, showViewPagerAnimation)
-                    animator.start()
+                    setPosition(position)
                 }
             }
         }
         return super.onTouchEvent(event)
     }
 
+    private fun setPosition(position: Int){
+        viewPager?.setCurrentItem(position, showViewPagerAnimation)
+        if (viewPager == null) {
+            currentPosition = position
+            setCheckText(position)
+        }
+        animator.start()
+        onItemCheckedListener?.invoke(position)
+    }
+
     private fun getTouchPosition(touchX: Float): Int{
         if (!data.isNullOrEmpty()) {
-            Log.e(TAG, "clickPosition: ${(touchX / onePieceWidth).toInt()}")
             return (touchX / onePieceWidth).toInt()
         }
         return 0
